@@ -12,6 +12,7 @@
             --primary-accent: #a3e635;
             --safe-color: #22c55e;
             --unsafe-color: #ef4444;
+            --warning-color: #f59e0b;
             --glass-bg: rgba(255, 255, 255, 0.12);
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-light: #ffffff;
@@ -225,6 +226,12 @@
             color: var(--unsafe-color);
         }
 
+        .result-card.warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 2px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
         .details-btn {
             display: none;
             margin-top: 15px;
@@ -238,9 +245,19 @@
             transition: all 0.3s;
         }
 
+        .details-btn.warning-btn {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
         .details-btn:hover {
             background: var(--unsafe-color);
             color: #fff;
+        }
+
+        .details-btn.warning-btn:hover {
+            background: var(--warning-color);
+            color: #0f172a;
         }
 
         .details-panel {
@@ -253,6 +270,10 @@
             border-radius: 10px;
             padding: 15px;
             text-align: left;
+        }
+
+        .details-panel.warning-panel {
+            border-color: rgba(245, 158, 11, 0.4);
         }
 
         .details-panel h4 {
@@ -278,6 +299,10 @@
         .details-panel li i {
             color: var(--unsafe-color);
             margin-top: 3px;
+        }
+
+        .details-panel.warning-panel li i {
+            color: var(--warning-color);
         }
 
         footer {
@@ -362,7 +387,7 @@
 
         <div class="loader-box" id="loader">
             <div class="spinner"></div>
-            <p style="font-size: 0.85rem; color: var(--text-dim);">Scanning URL parameters...</p>
+            <p style="font-size: 0.85rem; color: var(--text-dim);">Resolving redirects and analyzing URL parameters...</p>
         </div>
 
         <div class="result-card" id="resultCard">
@@ -377,11 +402,64 @@
     </main>
 
     <footer>
-        Developed by YASIR ARAFAT NOMAN
+        Developed by Noman
     </footer>
 
     <script>
-        function processLink() {
+        const KNOWN_SHORTENERS = [
+            'unl.one', 'bit.ly', 'tinyurl.com', 'is.gd', 't.co', 
+            'goo.gl', 'cutt.ly', 'rb.gy', 'shorturl.at', 'ow.ly', 'buff.ly'
+        ];
+
+        async function resolveUrlRedirects(initialUrl) {
+            let currentUrl = initialUrl;
+            let redirectCount = 0;
+            const maxRedirects = 10;
+            let isShortened = false;
+            let redirectChain = [];
+
+            try {
+                let parsedUrl = new URL(initialUrl.startsWith('http://') || initialUrl.startsWith('https://') ? initialUrl : 'https://' + initialUrl);
+                let hostname = parsedUrl.hostname.toLowerCase().replace(/^www\./, '');
+                
+                if (KNOWN_SHORTENERS.includes(hostname)) {
+                    isShortened = true;
+                }
+
+                while (redirectCount < maxRedirects) {
+                    try {
+                        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(currentUrl)}`);
+                        const data = await response.json();
+                        
+                        if (data.status && data.status.url && data.status.url !== currentUrl) {
+                            redirectChain.push(currentUrl);
+                            currentUrl = data.status.url;
+                            redirectCount++;
+                        } else {
+                            break;
+                        }
+                    } catch (e) {
+                        break;
+                    }
+                }
+
+                return {
+                    finalUrl: currentUrl,
+                    redirectCount: redirectCount,
+                    isShortened: isShortened,
+                    redirectChain: redirectChain
+                };
+            } catch (e) {
+                return {
+                    finalUrl: initialUrl,
+                    redirectCount: 0,
+                    isShortened: false,
+                    redirectChain: []
+                };
+            }
+        }
+
+        async function processLink() {
             const urlInput = document.getElementById('urlInput').value.trim();
             const loader = document.getElementById('loader');
             const resultCard = document.getElementById('resultCard');
@@ -399,31 +477,47 @@
             
             loader.style.display = 'block';
 
-            setTimeout(() => {
-                loader.style.display = 'none';
-                analyzeLink(urlInput);
-            }, 800);
+            const unshortenData = await resolveUrlRedirects(urlInput);
+
+            loader.style.display = 'none';
+            analyzeLink(urlInput, unshortenData);
         }
 
-        function analyzeLink(url) {
+        function analyzeLink(originalUrl, unshortenData) {
             const resultCard = document.getElementById('resultCard');
             const resultTitle = document.getElementById('resultTitle');
             const detailsBtn = document.getElementById('detailsBtn');
+            const detailsPanel = document.getElementById('detailsPanel');
             const detailsList = document.getElementById('detailsList');
 
             let isUnsafe = false;
+            let isWarning = false;
             let detectedReasons = [];
             let urlObj = null;
 
-            const lowerUrl = url.toLowerCase();
+            const targetUrl = unshortenData.finalUrl;
+            const lowerUrl = targetUrl.toLowerCase();
+            const lowerOriginalUrl = originalUrl.toLowerCase();
+
+            if (unshortenData.isShortened) {
+                isWarning = true;
+                detectedReasons.push(`Shortened Link Detected: Originally generated via shortener service (${originalUrl}).`);
+            }
+
+            if (unshortenData.redirectCount > 2) {
+                isUnsafe = true;
+                detectedReasons.push(`High Redirect Chain: Request redirected ${unshortenData.redirectCount} times before destination.`);
+            } else if (unshortenData.redirectCount > 0) {
+                detectedReasons.push(`Redirect Triggered: Destination resolved to -> ${unshortenData.finalUrl}`);
+            }
 
             try {
-                urlObj = new URL(url.startsWith('http://') || url.startsWith('https://') ? url : 'http://' + url);
+                urlObj = new URL(lowerUrl.startsWith('http://') || lowerUrl.startsWith('https://') ? lowerUrl : 'http://' + lowerUrl);
             } catch (e) {
                 console.log("URL parsing failed.");
             }
 
-            if (lowerUrl.startsWith('http://')) {
+            if (lowerUrl.startsWith('http://') || lowerOriginalUrl.startsWith('http://')) {
                 isUnsafe = true;
                 detectedReasons.push("Insecure Protocol: Plain HTTP connection used (lacks SSL/TLS encryption).");
             }
@@ -474,18 +568,27 @@
                 detectedReasons.push("Non-Standard Network Port: Target redirects through non-standard server ports.");
             }
 
-            if (url.length > 75) {
+            if (targetUrl.length > 75) {
                 isUnsafe = true;
                 detectedReasons.push("Excessive Length: Abnormally long URL string (>75 chars) used to hide threat payload.");
             }
 
             if (isUnsafe) {
                 resultCard.className = "result-card unsafe";
+                detailsBtn.className = "details-btn";
+                detailsPanel.className = "details-panel";
                 resultTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> UNSAFE LINK DETECTED`;
                 resultCard.style.display = 'block';
                 detailsBtn.style.display = 'inline-block';
-
                 detailsList.innerHTML = detectedReasons.map(r => `<li><i class="fa-solid fa-circle-xmark"></i> ${r}</li>`).join('');
+            } else if (isWarning) {
+                resultCard.className = "result-card warning";
+                detailsBtn.className = "details-btn warning-btn";
+                detailsPanel.className = "details-panel warning-panel";
+                resultTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> SUSPICIOUS SHORTENED LINK`;
+                resultCard.style.display = 'block';
+                detailsBtn.style.display = 'inline-block';
+                detailsList.innerHTML = detectedReasons.map(r => `<li><i class="fa-solid fa-triangle-exclamation"></i> ${r}</li>`).join('');
             } else {
                 resultCard.className = "result-card safe";
                 resultTitle.innerHTML = `<i class="fa-solid fa-circle-check"></i> SAFE LINK APPROVED`;
