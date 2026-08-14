@@ -16,35 +16,167 @@
             --text-dim: #cbd5e1;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { color: var(--text-light); min-height: 100vh; background-color: #0f172a; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+        }
+
+        body { 
+            color: var(--text-light); 
+            min-height: 100vh; 
+            background-color: #0f172a; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            overflow-x: hidden;
+        }
         
         .bg-image {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('1.png'); background-size: cover; background-position: center;
-            filter: blur(8px) brightness(0.65); transform: scale(1.05); z-index: -1;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-image: url('1.png'); 
+            background-size: cover; 
+            background-position: center;
+            filter: blur(8px) brightness(0.65); 
+            transform: scale(1.05); 
+            z-index: -1;
         }
 
-        header { display: flex; justify-content: space-between; align-items: center; padding: 30px 8%; width: 100%; }
-        .brand-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.4rem; color: #fff; text-decoration: none; }
-        nav ul { display: flex; list-style: none; gap: 30px; }
-        nav a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; transition: 0.3s; }
-        nav a:hover, nav a.active { color: #fff; border-bottom: 2px solid var(--primary-accent); }
-        .header-date { font-size: 0.9rem; color: var(--text-dim); }
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px 5%; 
+            width: 100%; 
+        }
 
-        main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+        .brand-name { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 800; 
+            font-size: 1.4rem; 
+            color: #fff; 
+            text-decoration: none; 
+        }
+
+        nav ul { 
+            display: flex; 
+            list-style: none; 
+            gap: 20px; 
+        }
+
+        nav a { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            font-size: 0.95rem; 
+            transition: 0.3s; 
+        }
+
+        nav a:hover, nav a.active { 
+            color: #fff; 
+            border-bottom: 2px solid var(--primary-accent); 
+        }
+
+        .header-date { 
+            font-size: 0.85rem; 
+            color: var(--text-dim); 
+        }
+
+        main { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 30px 15px 60px; 
+            width: 100%;
+        }
         
         .content-card {
-            background: var(--glass-bg); backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border); border-radius: 16px;
-            padding: 40px; width: 100%; max-width: 800px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: left;
+            background: var(--glass-bg); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); 
+            border-radius: 16px;
+            padding: 35px; 
+            width: 100%; 
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+            text-align: left;
+            word-wrap: break-word;
         }
 
-        .content-card h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 2rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
-        .info-group { margin-bottom: 20px; display: flex; align-items: center; gap: 15px; font-size: 1.1rem; color: var(--text-dim); }
-        .info-group i { color: var(--primary-accent); font-size: 1.3rem; }
-        footer { padding: 25px; text-align: center; font-size: 0.85rem; color: var(--text-dim); }
+        .content-card h1 { 
+            font-family: 'Montserrat', sans-serif; 
+            color: var(--primary-accent); 
+            font-size: clamp(1.5rem, 5vw, 2rem); 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid var(--glass-border); 
+            padding-bottom: 10px; 
+        }
+
+        .info-group { 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            font-size: 1.05rem; 
+            color: var(--text-dim); 
+        }
+
+        .info-group i { 
+            color: var(--primary-accent); 
+            font-size: 1.3rem; 
+            width: 25px;
+            text-align: center;
+        }
+
+        footer { 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 0.8rem; 
+            color: var(--text-dim); 
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            header { 
+                flex-direction: column; 
+                gap: 15px; 
+                padding: 20px 15px; 
+                text-align: center;
+            }
+
+            nav ul { 
+                gap: 15px; 
+            }
+
+            nav a { 
+                font-size: 0.85rem; 
+            }
+
+            .header-date { 
+                display: none; 
+            }
+
+            .content-card { 
+                padding: 20px; 
+            }
+
+            .info-group {
+                font-size: 0.9rem;
+                gap: 10px;
+            }
+
+            .info-group i {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
