@@ -415,92 +415,91 @@
             let detectedReasons = [];
             let urlObj = null;
 
-            const lowerUrl = url.toLowerCase();
+            const cleanUrl = url.trim().toLowerCase();
 
             try {
-                urlObj = new URL(url.startsWith('http://') || url.startsWith('https://') ? url : 'http://' + url);
+                urlObj = new URL(cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') ? cleanUrl : 'http://' + cleanUrl);
             } catch (e) {
                 console.log("URL parsing failed.");
             }
 
+            const hostname = urlObj ? urlObj.hostname : cleanUrl;
+
             // 1. Check HTTP vs HTTPS
-            if (lowerUrl.startsWith('http://')) {
+            if (cleanUrl.startsWith('http://')) {
                 isUnsafe = true;
                 detectedReasons.push("Insecure Protocol: Plain HTTP connection used (lacks SSL/TLS encryption).");
             }
 
-            // 2. Suspicious TLD Analysis (Updated: added .one, .click, .site, .link, etc.)
-            const suspiciousTLDs = ['.xyz', '.top', '.buzz', '.tk', '.ml', '.cf', '.gq', '.ga', '.zip', '.mov', '.one', '.click', '.site', '.link', '.work', '.party'];
-            if (suspiciousTLDs.some(tld => lowerUrl.includes(tld))) {
+        
+            const suspiciousTLDs = ['xyz', 'top', 'buzz', 'tk', 'ml', 'cf', 'gq', 'ga', 'zip', 'mov', 'one', 'click', 'site', 'link', 'work', 'party', 'online', 'space', 'live'];
+            const domainParts = hostname.split('.');
+            const currentTLD = domainParts[domainParts.length - 1];
+
+            if (suspiciousTLDs.includes(currentTLD)) {
                 isUnsafe = true;
-                detectedReasons.push("Low-Trust TLD: Suspicious or high-risk domain extension detected.");
+                detectedReasons.push(`High-Risk Domain Extension (TLD): .${currentTLD} is frequently associated with phishing & malicious redirects.`);
             }
 
-            // 3. Known URL Shorteners / Redirection Domains Check
-            const knownShorteners = ['unl.one', 'bit.ly', 'tinyurl.com', 'is.gd', 'cutt.ly', 'rb.gy', 't.co', 'goo.gl', 'ow.ly', 'shorturl.at'];
-            if (urlObj && knownShorteners.some(shortener => urlObj.hostname.includes(shortener))) {
+           
+            const knownShorteners = ['unl.one', 'bit.ly', 'tinyurl.com', 'is.gd', 'cutt.ly', 'rb.gy', 't.co', 'goo.gl', 'ow.ly', 'shorturl.at', 's.id', 'v.gd'];
+            if (knownShorteners.some(shortener => hostname.includes(shortener))) {
                 isUnsafe = true;
-                detectedReasons.push("URL Shortener Detected: Hides the actual destination address, frequently used in phishing attacks.");
+                detectedReasons.push("URL Shortener Service: Masked link detected to hide actual destination URL.");
             }
 
-            // 4. Short / Suspicious Hash Path (e.g., /2k7A8 or obfuscated short links)
-            if (urlObj && urlObj.pathname.length > 1 && urlObj.pathname.length <= 10 && !urlObj.pathname.includes('.')) {
+           
+            if (hostname.length <= 8 && urlObj && urlObj.pathname.length > 1) {
                 isUnsafe = true;
-                detectedReasons.push("Suspicious Redirection Path: Contains a obfuscated short link path.");
+                detectedReasons.push("Abnormal Domain/Short Path Structure: High probability of redirected phishing hash.");
             }
 
-            // 5. Raw IP Address
+            
             const ipPattern = /^(?:https?:\/\/)?(?:\d{1,3}\.){3}\d{1,3}/;
-            if (ipPattern.test(lowerUrl)) {
+            if (ipPattern.test(cleanUrl)) {
                 isUnsafe = true;
                 detectedReasons.push("Direct IP Access: Uses raw IP address instead of registered domain name.");
             }
 
-            // 6. Credential Harvester Keywords
-            const suspiciousKeywords = ['login', 'verify', 'free', 'secure', 'bank', 'account', 'update', 'claim', 'signin', 'wallet', 'confirm', 'bonus'];
-            if (suspiciousKeywords.some(key => lowerUrl.includes(key))) {
+          
+            const suspiciousKeywords = ['login', 'verify', 'free', 'secure', 'bank', 'account', 'update', 'claim', 'signin', 'wallet', 'confirm', 'bonus', 'auth'];
+            if (suspiciousKeywords.some(key => cleanUrl.includes(key))) {
                 isUnsafe = true;
                 detectedReasons.push("High-Risk Keyword: Contains social-engineering triggers (e.g., login, verify, bank).");
             }
 
-            // 7. Excessive Subdomains Check
-            if (urlObj) {
-                const domainParts = urlObj.hostname.split('.');
-                if (domainParts.length > 3) {
-                    isUnsafe = true;
-                    detectedReasons.push("Multi-Level Subdomains: Excessive subdomain layering detected (spoofing indicator).");
-                }
-            } else if ((lowerUrl.match(/\./g) || []).length > 3) {
+           
+            if (domainParts.length > 3) {
                 isUnsafe = true;
-                detectedReasons.push("Multi-Level Subdomains: High frequency of dot separators detected.");
+                detectedReasons.push("Multi-Level Subdomains: Excessive subdomain layering detected (spoofing indicator).");
             }
 
-            // 8. Special Symbols
-            if (lowerUrl.includes('@')) {
+            
+            if (cleanUrl.includes('@')) {
                 isUnsafe = true;
                 detectedReasons.push("URL Obfuscation: Contains '@' symbol which ignores early domain path parameters.");
             }
             
-            if ((lowerUrl.match(/-/g) || []).length > 3) {
+            if ((cleanUrl.match(/-/g) || []).length > 3) {
                 isUnsafe = true;
                 detectedReasons.push("Domain Masking: Multiple hyphens detected to impersonate legitimate brand names.");
             }
 
-            // 9. Non-Standard Port Usage
+           
             const portPattern = /:\d{2,5}/;
-            const targetHost = urlObj ? urlObj.host : lowerUrl;
-            if (portPattern.test(targetHost) && !lowerUrl.includes(':80') && !lowerUrl.includes(':443')) {
+            const targetHost = urlObj ? urlObj.host : cleanUrl;
+            if (portPattern.test(targetHost) && !cleanUrl.includes(':80') && !cleanUrl.includes(':443')) {
                 isUnsafe = true;
                 detectedReasons.push("Non-Standard Network Port: Target redirects through non-standard server ports.");
             }
 
-            // 10. Abnormal URL Length
-            if (url.length > 75) {
+         
+            if (cleanUrl.length > 75) {
                 isUnsafe = true;
                 detectedReasons.push("Excessive Length: Abnormally long URL string (>75 chars) used to hide threat payload.");
             }
 
-            // Display Logic
+           
             if (isUnsafe) {
                 resultCard.className = "result-card unsafe";
                 resultTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> UNSAFE LINK DETECTED`;
