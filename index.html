@@ -59,7 +59,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 8%;
+            padding: 20px 5%;
             width: 100%;
         }
 
@@ -75,7 +75,7 @@
         nav ul {
             display: flex;
             list-style: none;
-            gap: 30px;
+            gap: 20px;
         }
 
         nav a {
@@ -92,7 +92,7 @@
         }
 
         .header-date {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-dim);
             letter-spacing: 1px;
         }
@@ -104,18 +104,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px 80px;
+            padding: 30px 15px 60px;
             text-align: center;
+            width: 100%;
         }
 
         .hero-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 4.5rem;
+            font-size: clamp(2.2rem, 8vw, 4.5rem); /* অটোমেটিক স্কেলিং */
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 35px;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
             text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            word-wrap: break-word;
         }
 
         /* Search Glass Bar Layout */
@@ -131,7 +133,7 @@
             width: 100%;
             max-width: 750px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .search-input {
@@ -139,9 +141,10 @@
             background: transparent;
             border: none;
             outline: none;
-            padding: 15px 20px;
+            padding: 12px 15px;
             color: #fff;
-            font-size: 1.05rem;
+            font-size: 1rem;
+            min-width: 0; /* Overflow রোধ করতে */
         }
 
         .search-input::placeholder {
@@ -152,14 +155,15 @@
             background-color: var(--primary-accent);
             color: #0f172a;
             border: none;
-            padding: 16px 40px;
+            padding: 14px 28px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 800;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .check-btn:hover {
@@ -170,10 +174,11 @@
         /* Hero Subtext */
         .hero-description {
             max-width: 680px;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             color: var(--text-dim);
             line-height: 1.6;
             margin-bottom: 20px;
+            padding: 0 10px;
         }
 
         /* Processing Loader */
@@ -201,14 +206,15 @@
             display: none;
             width: 100%;
             max-width: 750px;
-            padding: 20px;
+            padding: 16px;
             border-radius: 12px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             margin-top: 15px;
             backdrop-filter: blur(12px);
             animation: fadeIn 0.4s ease;
+            word-break: break-word;
         }
 
         @keyframes fadeIn {
@@ -235,7 +241,7 @@
             background: transparent;
             border: 1px solid var(--unsafe-color);
             color: var(--unsafe-color);
-            padding: 8px 24px;
+            padding: 8px 20px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
@@ -255,14 +261,14 @@
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid rgba(239, 68, 68, 0.4);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             text-align: left;
         }
 
         .details-panel h4 {
             color: var(--primary-accent);
             margin-bottom: 10px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .details-panel ul {
@@ -271,24 +277,71 @@
 
         .details-panel li {
             color: var(--text-dim);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 8px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
+            word-break: break-word;
         }
 
         .details-panel li i {
             color: var(--unsafe-color);
+            margin-top: 3px;
         }
 
         /* Footer */
         footer {
-            padding: 25px;
+            padding: 20px;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-dim);
             letter-spacing: 1px;
+        }
+
+        /* ==========================================
+           MOBILE RESPONSIVE MEDIA QUERIES (সংশোধন)
+           ========================================== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px 15px;
+            }
+
+            nav ul {
+                gap: 15px;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+            }
+
+            .header-date {
+                display: none; /* মোবাইলে জায়গা বাঁচানোর জন্য লুকানো হলো */
+            }
+
+            .search-container {
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.08);
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .search-input {
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .check-btn {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .result-card {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -346,11 +399,10 @@
 
     <!-- Footer Credit -->
     <footer>
-        Developed by NOMAN
+        Developed by Noma
     </footer>
 
     <script>
-
         function processLink() {
             const urlInput = document.getElementById('urlInput').value.trim();
             const loader = document.getElementById('loader');
@@ -363,22 +415,18 @@
                 return;
             }
 
-    
             resultCard.style.display = 'none';
             detailsBtn.style.display = 'none';
             detailsPanel.style.display = 'none';
             
-        
             loader.style.display = 'block';
 
-        
             setTimeout(() => {
                 loader.style.display = 'none';
                 analyzeLink(urlInput);
             }, 800);
         }
 
-    
         function analyzeLink(url) {
             const resultCard = document.getElementById('resultCard');
             const resultTitle = document.getElementById('resultTitle');
@@ -391,41 +439,40 @@
 
             const lowerUrl = url.toLowerCase();
 
-        
             try {
                 urlObj = new URL(url.startsWith('http://') || url.startsWith('https://') ? url : 'http://' + url);
             } catch (e) {
-                console.log("URL parsing failed, falling back to string checks.");
+                console.log("URL parsing failed.");
             }
 
-        
+            // 1. Check HTTP vs HTTPS
             if (lowerUrl.startsWith('http://')) {
                 isUnsafe = true;
                 detectedReasons.push("Insecure Protocol: Plain HTTP connection used (lacks SSL/TLS encryption).");
             }
 
-        
+            // 2. Suspicious TLD Analysis
             const suspiciousTLDs = ['.xyz', '.top', '.buzz', '.tk', '.ml', '.cf', '.gq', '.ga', '.zip', '.mov'];
             if (suspiciousTLDs.some(tld => lowerUrl.includes(tld))) {
                 isUnsafe = true;
                 detectedReasons.push("Low-Trust TLD: Suspicious domain extension commonly associated with spam/phishing.");
             }
 
-        
+            // 3. Raw IP Address
             const ipPattern = /^(?:https?:\/\/)?(?:\d{1,3}\.){3}\d{1,3}/;
             if (ipPattern.test(lowerUrl)) {
                 isUnsafe = true;
                 detectedReasons.push("Direct IP Access: Uses raw IP address instead of registered domain name.");
             }
 
-        
+            // 4. Credential Harvester Keywords
             const suspiciousKeywords = ['login', 'verify', 'free', 'secure', 'bank', 'account', 'update', 'claim', 'signin', 'wallet', 'confirm', 'bonus'];
             if (suspiciousKeywords.some(key => lowerUrl.includes(key))) {
                 isUnsafe = true;
                 detectedReasons.push("High-Risk Keyword: Contains social-engineering triggers (e.g., login, verify, bank).");
             }
 
-        
+            // 5. Excessive Subdomains Check
             if (urlObj) {
                 const domainParts = urlObj.hostname.split('.');
                 if (domainParts.length > 3) {
@@ -437,7 +484,7 @@
                 detectedReasons.push("Multi-Level Subdomains: High frequency of dot separators detected.");
             }
 
-        
+            // 6. Special Symbols
             if (lowerUrl.includes('@')) {
                 isUnsafe = true;
                 detectedReasons.push("URL Obfuscation: Contains '@' symbol which ignores early domain path parameters.");
@@ -448,7 +495,7 @@
                 detectedReasons.push("Domain Masking: Multiple hyphens detected to impersonate legitimate brand names.");
             }
 
-        
+            // 7. Non-Standard Port Usage
             const portPattern = /:\d{2,5}/;
             const targetHost = urlObj ? urlObj.host : lowerUrl;
             if (portPattern.test(targetHost) && !lowerUrl.includes(':80') && !lowerUrl.includes(':443')) {
@@ -456,13 +503,13 @@
                 detectedReasons.push("Non-Standard Network Port: Target redirects through non-standard server ports.");
             }
 
-        
+            // 8. Abnormal URL Length
             if (url.length > 75) {
                 isUnsafe = true;
                 detectedReasons.push("Excessive Length: Abnormally long URL string (>75 chars) used to hide threat payload.");
             }
 
-        
+            // Display Logic
             if (isUnsafe) {
                 resultCard.className = "result-card unsafe";
                 resultTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> UNSAFE LINK DETECTED`;
