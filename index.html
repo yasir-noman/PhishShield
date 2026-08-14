@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhishShield - Cyber Threat Detector</title>
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-accent: #a3e635; /* Lime Accent */
+            --primary-accent: #a3e635;
             --safe-color: #22c55e;
             --unsafe-color: #ef4444;
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -38,7 +36,6 @@
             justify-content: space-between;
         }
 
-        /* Background Image with Blur Effect */
         .bg-image {
             position: fixed;
             top: 0;
@@ -50,11 +47,10 @@
             background-position: center;
             background-repeat: no-repeat;
             filter: blur(8px) brightness(0.65);
-            transform: scale(1.05); /* Prevents blurred edges */
+            transform: scale(1.05);
             z-index: -1;
         }
 
-        /* Top Navigation Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -97,7 +93,6 @@
             letter-spacing: 1px;
         }
 
-        /* Main Hero Layout */
         main {
             flex: 1;
             display: flex;
@@ -111,7 +106,7 @@
 
         .hero-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(2.2rem, 8vw, 4.5rem); /* অটোমেটিক স্কেলিং */
+            font-size: clamp(2.2rem, 8vw, 4.5rem);
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -120,7 +115,6 @@
             word-wrap: break-word;
         }
 
-        /* Search Glass Bar Layout */
         .search-container {
             display: flex;
             align-items: center;
@@ -144,7 +138,7 @@
             padding: 12px 15px;
             color: #fff;
             font-size: 1rem;
-            min-width: 0; /* Overflow রোধ করতে */
+            min-width: 0;
         }
 
         .search-input::placeholder {
@@ -171,7 +165,6 @@
             box-shadow: 0 0 20px rgba(163, 230, 53, 0.4);
         }
 
-        /* Hero Subtext */
         .hero-description {
             max-width: 680px;
             font-size: 0.9rem;
@@ -181,7 +174,6 @@
             padding: 0 10px;
         }
 
-        /* Processing Loader */
         .loader-box {
             display: none;
             margin: 20px 0;
@@ -201,7 +193,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Result Cards */
         .result-card {
             display: none;
             width: 100%;
@@ -234,7 +225,6 @@
             color: var(--unsafe-color);
         }
 
-        /* Details Toggle Section */
         .details-btn {
             display: none;
             margin-top: 15px;
@@ -290,7 +280,6 @@
             margin-top: 3px;
         }
 
-        /* Footer */
         footer {
             padding: 20px;
             text-align: center;
@@ -299,9 +288,6 @@
             letter-spacing: 1px;
         }
 
-        /* ==========================================
-           MOBILE RESPONSIVE MEDIA QUERIES (সংশোধন)
-           ========================================== */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -318,7 +304,7 @@
             }
 
             .header-date {
-                display: none; /* মোবাইলে জায়গা বাঁচানোর জন্য লুকানো হলো */
+                display: none;
             }
 
             .search-container {
@@ -347,10 +333,8 @@
 </head>
 <body>
 
-    <!-- Blurred Background Image Container -->
     <div class="bg-image"></div>
 
-    <!-- Header Section -->
     <header>
         <a href="index.html" class="brand-name">PhishShield</a>
         <nav>
@@ -364,11 +348,9 @@
         <div class="header-date">SECURITY TOOLS</div>
     </header>
 
-    <!-- Main Content Section -->
     <main>
         <h1 class="hero-title">LINK CHECKER</h1>
 
-        <!-- Input & Search Bar -->
         <div class="search-container">
             <input type="text" id="urlInput" class="search-input" placeholder="Paste your target URL here...">
             <button class="check-btn" id="checkBtn" onclick="processLink()">CHECK</button>
@@ -378,18 +360,15 @@
             Analyze suspicious links for phishing attempts, domain spoofing, malicious extensions, and unsafe IP patterns in real-time.
         </p>
 
-        <!-- Loader -->
         <div class="loader-box" id="loader">
             <div class="spinner"></div>
             <p style="font-size: 0.85rem; color: var(--text-dim);">Scanning URL parameters...</p>
         </div>
 
-        <!-- Result Status Card -->
         <div class="result-card" id="resultCard">
             <span id="resultTitle"></span>
         </div>
 
-        <!-- Threat Details -->
         <button class="details-btn" id="detailsBtn" onclick="toggleDetails()">SHOW DETAILS</button>
         <div class="details-panel" id="detailsPanel">
             <h4><i class="fa-solid fa-bug"></i> THREAT ANALYSIS REPORT:</h4>
@@ -397,9 +376,8 @@
         </div>
     </main>
 
-    <!-- Footer Credit -->
     <footer>
-        Developed by Noma
+        Developed by YASIR ARAFAT NOMAN
     </footer>
 
     <script>
@@ -445,34 +423,29 @@
                 console.log("URL parsing failed.");
             }
 
-            // 1. Check HTTP vs HTTPS
             if (lowerUrl.startsWith('http://')) {
                 isUnsafe = true;
                 detectedReasons.push("Insecure Protocol: Plain HTTP connection used (lacks SSL/TLS encryption).");
             }
 
-            // 2. Suspicious TLD Analysis
             const suspiciousTLDs = ['.xyz', '.top', '.buzz', '.tk', '.ml', '.cf', '.gq', '.ga', '.zip', '.mov'];
             if (suspiciousTLDs.some(tld => lowerUrl.includes(tld))) {
                 isUnsafe = true;
                 detectedReasons.push("Low-Trust TLD: Suspicious domain extension commonly associated with spam/phishing.");
             }
 
-            // 3. Raw IP Address
             const ipPattern = /^(?:https?:\/\/)?(?:\d{1,3}\.){3}\d{1,3}/;
             if (ipPattern.test(lowerUrl)) {
                 isUnsafe = true;
                 detectedReasons.push("Direct IP Access: Uses raw IP address instead of registered domain name.");
             }
 
-            // 4. Credential Harvester Keywords
             const suspiciousKeywords = ['login', 'verify', 'free', 'secure', 'bank', 'account', 'update', 'claim', 'signin', 'wallet', 'confirm', 'bonus'];
             if (suspiciousKeywords.some(key => lowerUrl.includes(key))) {
                 isUnsafe = true;
                 detectedReasons.push("High-Risk Keyword: Contains social-engineering triggers (e.g., login, verify, bank).");
             }
 
-            // 5. Excessive Subdomains Check
             if (urlObj) {
                 const domainParts = urlObj.hostname.split('.');
                 if (domainParts.length > 3) {
@@ -484,7 +457,6 @@
                 detectedReasons.push("Multi-Level Subdomains: High frequency of dot separators detected.");
             }
 
-            // 6. Special Symbols
             if (lowerUrl.includes('@')) {
                 isUnsafe = true;
                 detectedReasons.push("URL Obfuscation: Contains '@' symbol which ignores early domain path parameters.");
@@ -495,7 +467,6 @@
                 detectedReasons.push("Domain Masking: Multiple hyphens detected to impersonate legitimate brand names.");
             }
 
-            // 7. Non-Standard Port Usage
             const portPattern = /:\d{2,5}/;
             const targetHost = urlObj ? urlObj.host : lowerUrl;
             if (portPattern.test(targetHost) && !lowerUrl.includes(':80') && !lowerUrl.includes(':443')) {
@@ -503,13 +474,11 @@
                 detectedReasons.push("Non-Standard Network Port: Target redirects through non-standard server ports.");
             }
 
-            // 8. Abnormal URL Length
             if (url.length > 75) {
                 isUnsafe = true;
                 detectedReasons.push("Excessive Length: Abnormally long URL string (>75 chars) used to hide threat payload.");
             }
 
-            // Display Logic
             if (isUnsafe) {
                 resultCard.className = "result-card unsafe";
                 resultTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> UNSAFE LINK DETECTED`;
