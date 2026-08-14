@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield - About Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-accent: #a3e635;
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --text-dim: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { color: var(--text-light); min-height: 100vh; background-color: #0f172a; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .bg-image {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('1.png'); background-size: cover; background-position: center;
+            filter: blur(8px) brightness(0.65); transform: scale(1.05); z-index: -1;
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 30px 8%; width: 100%; }
+        .brand-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.4rem; color: #fff; text-decoration: none; }
+        nav ul { display: flex; list-style: none; gap: 30px; }
+        nav a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; transition: 0.3s; }
+        nav a:hover, nav a.active { color: #fff; border-bottom: 2px solid var(--primary-accent); }
+        .header-date { font-size: 0.9rem; color: var(--text-dim); }
+
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+        
+        .content-card {
+            background: var(--glass-bg); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            padding: 40px; width: 100%; max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: left;
+        }
+
+        .content-card h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 2rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        .content-card p { font-size: 1rem; color: var(--text-dim); line-height: 1.8; margin-bottom: 15px; }
+        footer { padding: 25px; text-align: center; font-size: 0.85rem; color: var(--text-dim); }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+
+    <header>
+        <a href="index.html" class="brand-name">PhishShield</a>
+        <nav>
+            <ul>
+                <li><a href="about.html" class="active">About Us</a></li>
+                <li><a href="project.html">Project</a></li>
+                <li><a href="index.html">Analyzer</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="header-date">SECURITY TOOLS</div>
+    </header>
+
+    <main>
+        <div class="content-card">
+            <h1>ABOUT PHISHSHIELD</h1>
+            <p><strong>PhishShield</strong> is an academic cyber defense initiative engineered to inspect and detect malicious web URLs in real-time. Built as part of research on cyberspace safety, this tool empowers users to identify phishing attempts before falling victim to credentials theft or malware delivery.</p>
+            <p>Our core objective is to bridge the gap between automated heuristic analysis and user awareness, addressing long-term policy and security challenges in online threat mitigation.</p>
+        </div>
+    </main>
+
+    <footer>Developed by Noman</footer>
+</body>
+</html>

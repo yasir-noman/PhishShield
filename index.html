@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield - Cyber Threat Detector</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-accent: #a3e635; /* Lime Accent */
+            --safe-color: #22c55e;
+            --unsafe-color: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --text-dim: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            color: var(--text-light);
+            min-height: 100vh;
+            background-color: #0f172a;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Background Image with Blur Effect */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px) brightness(0.65);
+            transform: scale(1.05); /* Prevents blurred edges */
+            z-index: -1;
+        }
+
+        /* Top Navigation Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 8%;
+            width: 100%;
+        }
+
+        .brand-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            color: #fff;
+            border-bottom: 2px solid var(--primary-accent);
+        }
+
+        .header-date {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        /* Main Hero Layout */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px 80px;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 35px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Search Glass Bar Layout */
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 8px;
+            width: 100%;
+            max-width: 750px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 15px 20px;
+            color: #fff;
+            font-size: 1.05rem;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .check-btn {
+            background-color: var(--primary-accent);
+            color: #0f172a;
+            border: none;
+            padding: 16px 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .check-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.4);
+        }
+
+        /* Hero Subtext */
+        .hero-description {
+            max-width: 680px;
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Processing Loader */
+        .loader-box {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid var(--primary-accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Result Cards */
+        .result-card {
+            display: none;
+            width: 100%;
+            max-width: 750px;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin-top: 15px;
+            backdrop-filter: blur(12px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card.safe {
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid var(--safe-color);
+            color: var(--safe-color);
+        }
+
+        .result-card.unsafe {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid var(--unsafe-color);
+            color: var(--unsafe-color);
+        }
+
+        /* Details Toggle Section */
+        .details-btn {
+            display: none;
+            margin-top: 15px;
+            background: transparent;
+            border: 1px solid var(--unsafe-color);
+            color: var(--unsafe-color);
+            padding: 8px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .details-btn:hover {
+            background: var(--unsafe-color);
+            color: #fff;
+        }
+
+        .details-panel {
+            display: none;
+            width: 100%;
+            max-width: 750px;
+            margin-top: 15px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .details-panel h4 {
+            color: var(--primary-accent);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .details-panel ul {
+            list-style: none;
+        }
+
+        .details-panel li {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .details-panel li i {
+            color: var(--unsafe-color);
+        }
+
+        /* Footer */
+        footer {
+            padding: 25px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Blurred Background Image Container -->
+    <div class="bg-image"></div>
+
+    <!-- Header Section -->
+    <header>
+        <a href="index.html" class="brand-name">PhishShield</a>
+        <nav>
+            <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="project.html">Project</a></li>
+                <li><a href="index.html" class="active">Analyzer</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="header-date">SECURITY TOOLS</div>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+        <h1 class="hero-title">LINK CHECKER</h1>
+
+        <!-- Input & Search Bar -->
+        <div class="search-container">
+            <input type="text" id="urlInput" class="search-input" placeholder="Paste your target URL here...">
+            <button class="check-btn" id="checkBtn" onclick="processLink()">CHECK</button>
+        </div>
+
+        <p class="hero-description">
+            Analyze suspicious links for phishing attempts, domain spoofing, malicious extensions, and unsafe IP patterns in real-time.
+        </p>
+
+        <!-- Loader -->
+        <div class="loader-box" id="loader">
+            <div class="spinner"></div>
+            <p style="font-size: 0.85rem; color: var(--text-dim);">Scanning URL parameters...</p>
+        </div>
+
+        <!-- Result Status Card -->
+        <div class="result-card" id="resultCard">
+            <span id="resultTitle"></span>
+        </div>
+
+        <!-- Threat Details -->
+        <button class="details-btn" id="detailsBtn" onclick="toggleDetails()">SHOW DETAILS</button>
+        <div class="details-panel" id="detailsPanel">
+            <h4><i class="fa-solid fa-bug"></i> THREAT ANALYSIS REPORT:</h4>
+            <ul id="detailsList"></ul>
+        </div>
+    </main>
+
+    <!-- Footer Credit -->
+    <footer>
+        Developed by NOMAN
+    </footer>
+
+    <script>
+
+        function processLink() {
+            const urlInput = document.getElementById('urlInput').value.trim();
+            const loader = document.getElementById('loader');
+            const resultCard = document.getElementById('resultCard');
+            const detailsBtn = document.getElementById('detailsBtn');
+            const detailsPanel = document.getElementById('detailsPanel');
+
+            if (!urlInput) {
+                alert("Please enter a valid URL to analyze!");
+                return;
+            }
+
+    
+            resultCard.style.display = 'none';
+            detailsBtn.style.display = 'none';
+            detailsPanel.style.display = 'none';
+            
+        
+            loader.style.display = 'block';
+
+        
+            setTimeout(() => {
+                loader.style.display = 'none';
+                analyzeLink(urlInput);
+            }, 800);
+        }
+
+    
+        function analyzeLink(url) {
+            const resultCard = document.getElementById('resultCard');
+            const resultTitle = document.getElementById('resultTitle');
+            const detailsBtn = document.getElementById('detailsBtn');
+            const detailsList = document.getElementById('detailsList');
+
+            let isUnsafe = false;
+            let detectedReasons = [];
+            let urlObj = null;
+
+            const lowerUrl = url.toLowerCase();
+
+        
+            try {
+                urlObj = new URL(url.startsWith('http://') || url.startsWith('https://') ? url : 'http://' + url);
+            } catch (e) {
+                console.log("URL parsing failed, falling back to string checks.");
+            }
+
+        
+            if (lowerUrl.startsWith('http://')) {
+                isUnsafe = true;
+                detectedReasons.push("Insecure Protocol: Plain HTTP connection used (lacks SSL/TLS encryption).");
+            }
+
+        
+            const suspiciousTLDs = ['.xyz', '.top', '.buzz', '.tk', '.ml', '.cf', '.gq', '.ga', '.zip', '.mov'];
+            if (suspiciousTLDs.some(tld => lowerUrl.includes(tld))) {
+                isUnsafe = true;
+                detectedReasons.push("Low-Trust TLD: Suspicious domain extension commonly associated with spam/phishing.");
+            }
+
+        
+            const ipPattern = /^(?:https?:\/\/)?(?:\d{1,3}\.){3}\d{1,3}/;
+            if (ipPattern.test(lowerUrl)) {
+                isUnsafe = true;
+                detectedReasons.push("Direct IP Access: Uses raw IP address instead of registered domain name.");
+            }
+
+        
+            const suspiciousKeywords = ['login', 'verify', 'free', 'secure', 'bank', 'account', 'update', 'claim', 'signin', 'wallet', 'confirm', 'bonus'];
+            if (suspiciousKeywords.some(key => lowerUrl.includes(key))) {
+                isUnsafe = true;
+                detectedReasons.push("High-Risk Keyword: Contains social-engineering triggers (e.g., login, verify, bank).");
+            }
+
+        
+            if (urlObj) {
+                const domainParts = urlObj.hostname.split('.');
+                if (domainParts.length > 3) {
+                    isUnsafe = true;
+                    detectedReasons.push("Multi-Level Subdomains: Excessive subdomain layering detected (spoofing indicator).");
+                }
+            } else if ((lowerUrl.match(/\./g) || []).length > 3) {
+                isUnsafe = true;
+                detectedReasons.push("Multi-Level Subdomains: High frequency of dot separators detected.");
+            }
+
+        
+            if (lowerUrl.includes('@')) {
+                isUnsafe = true;
+                detectedReasons.push("URL Obfuscation: Contains '@' symbol which ignores early domain path parameters.");
+            }
+            
+            if ((lowerUrl.match(/-/g) || []).length > 3) {
+                isUnsafe = true;
+                detectedReasons.push("Domain Masking: Multiple hyphens detected to impersonate legitimate brand names.");
+            }
+
+        
+            const portPattern = /:\d{2,5}/;
+            const targetHost = urlObj ? urlObj.host : lowerUrl;
+            if (portPattern.test(targetHost) && !lowerUrl.includes(':80') && !lowerUrl.includes(':443')) {
+                isUnsafe = true;
+                detectedReasons.push("Non-Standard Network Port: Target redirects through non-standard server ports.");
+            }
+
+        
+            if (url.length > 75) {
+                isUnsafe = true;
+                detectedReasons.push("Excessive Length: Abnormally long URL string (>75 chars) used to hide threat payload.");
+            }
+
+        
+            if (isUnsafe) {
+                resultCard.className = "result-card unsafe";
+                resultTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> UNSAFE LINK DETECTED`;
+                resultCard.style.display = 'block';
+                detailsBtn.style.display = 'inline-block';
+
+                detailsList.innerHTML = detectedReasons.map(r => `<li><i class="fa-solid fa-circle-xmark"></i> ${r}</li>`).join('');
+            } else {
+                resultCard.className = "result-card safe";
+                resultTitle.innerHTML = `<i class="fa-solid fa-circle-check"></i> SAFE LINK APPROVED`;
+                resultCard.style.display = 'block';
+            }
+        }
+
+        function toggleDetails() {
+            const panel = document.getElementById('detailsPanel');
+            const btn = document.getElementById('detailsBtn');
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+                btn.textContent = 'SHOW DETAILS';
+            } else {
+                panel.style.display = 'block';
+                btn.textContent = 'HIDE DETAILS';
+            }
+        }
+    </script>
+</body>
+</html>
